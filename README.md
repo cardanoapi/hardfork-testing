@@ -9,3 +9,4 @@ The milestones are tracked under the project: https://github.com/orgs/cardanoapi
 - https://github.com/dQuadrant/cardano-marketplace
 - https://github.com/IntersectMBO/cardano-node-tests
 - https://github.com/IntersectMBO/cardano-test-plans
+- https://github.com/cardanoapi/gov-action-load-testing
