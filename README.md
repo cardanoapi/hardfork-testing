@@ -16,6 +16,7 @@ The milestones are tracked under the project: https://github.com/orgs/cardanoapi
 - https://github.com/IntersectMBO/cardano-test-plans/pull/45
 - https://github.com/IntersectMBO/cardano-test-plans/pull/47
 - https://github.com/IntersectMBO/cardano-node-tests/pull/2444
+- https://github.com/IntersectMBO/plutus/issues/6151
 
 # Dashboards / Reports
 - https://cardanoapi.github.io/gov-action-load-testing
