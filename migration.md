@@ -126,12 +126,12 @@ mkWrappedMarket ctx = check $ mkMarket (parseData ctx "Invalid context")
 ```
 It takes only one argument, `BuiltinData`, which is parsed into the `ScriptContext`.
 
-The update has been catered towards V3 plutus scripts, as there is no need to add additional pragma on plutus smarts contracts using `PlutusLedgerApi.V3 `dependencies, and also, there is no need to specify plc versions while applying parameters. However, if the developer prefers, the following pragma can be added on V3 smart contracts: 
+The update has been catered towards V3 plutus scripts, as there is no need to add additional pragma on plutus smarts contracts using `PlutusLedgerApi.V3` dependencies, and also, there is no need to specify plc versions while applying parameters. However, if the developer prefers, the following pragma can be added on V3 smart contracts: 
 
 ```hs
 {-# OPTIONS_GHC -fplugin-opt PlutusTx.Plugin:target-version=1.1.0 #-}
 ```
-In the case of parameterized V3 contracts, `PlutusTx.iftCodeDef` can directly be used, but again, if desired, the validator can be written in the following way by explicitly specifying `plcVersion110`` `:
+In the case of parameterized V3 contracts, `PlutusTx.iftCodeDef` can directly be used, but again, if desired, the validator can be written in the following way by explicitly specifying `plcVersion110`:
 
 ```hs
 configurableMarketValidator constructor = 
@@ -173,7 +173,7 @@ redeemer = case fromBuiltinData $ getRedeemer (scriptContextRedeemer ctx) of
     Nothing -> traceError "Invalid Redeemer"
     Just r -> r
 ```
-Just like parsing datum to a correct data type, we can parse the redeemer to BuiltinData using getRedeemer first and then to the required data type using fromBuiltinData or unsafeFromBuiltinData.
+Just like parsing datum to a correct data type, we can parse the redeemer to `BuiltinData` using `getRedeemer` first and then to the required data type using `fromBuiltinData` or `unsafeFromBuiltinData`.
 
 For the simple cardano marketplace contract using PlutusV3, the validator logic function is available at [Cardano-Marketplace-V3/SimpleMarketplace](https://github.com/dQuadrant/cardano-marketplace/blob/3f0e1290ea79f191511875221f41c9a90d852361/marketplace-plutus/Plutus/Contracts/V3/SimpleMarketplace.hs#L80). This function takes ScriptContext only, with the decoding of datum and redeemer done inside the function.
 
