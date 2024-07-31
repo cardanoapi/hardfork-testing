@@ -61,13 +61,16 @@ validator datum redeemer context =
 ```
 
 ### 2.3 Reference script cost analysis
-DApps using Plutus V1 and V2 scripts need to be aware about the updated transaction costs linked to reference scripts under the Conway era. The cost model in Cardano is an integral part of its security protocol. By imposing higher costs on larger reference scripts, the network effectively mitigates spam. Please refer to the [reference script cost calculator](https://docs.google.com/spreadsheets/d/1KFJCCbkDE5GaghlD4rDXB12pqLKnDFUNOKi0WErp_-Q/edit?gid=0#gid=0) to analyze and compare the cost implications of using reference scripts in Cardano transactions between the Babbage and Conway eras. It could also be a resource for helping developers optimize their DApps for cost efficiency and resource utilization.
+DApps using Plutus V1 and V2 scripts need to be aware about the updated transaction costs linked to reference scripts under the Conway era. Also, fees for V2 and V3 will be adjusted following the Chang Hard Fork. This adjustment is due to the requirement to pay for reference scripts and a revision in the cost model.  
+The modifications to the cost model are expected to lower fees by approximately 10%-20%, though the introduction of reference script fees will cause a partial increase in overall costs.  
+The cost model in Cardano is an integral part of its security protocol. By imposing higher costs on larger reference scripts, the network effectively mitigates spam.
+Please refer to the [reference script cost calculator](https://docs.google.com/spreadsheets/d/1KFJCCbkDE5GaghlD4rDXB12pqLKnDFUNOKi0WErp_-Q/edit?gid=0#gid=0) to analyze and compare the cost implications of using reference scripts in Cardano transactions between the Babbage and Conway eras. It could also be a resource for helping developers optimize their DApps for cost efficiency and resource utilization.
 
 # 3. What To Do
 
 If developers want to use `PlutusLedgerApi.V2` dependencies, one of the changes needed is to the return type of the validator if the `check` function is used. Since the type signature for the `check` function has changed from `Bool -> ()` to `Bool -> BuiltinUnit`, the validator implementing this function must also return `BuiltinUnit`. This type is compatible with the `PlutusTx.compile` function. 
 
-However, this is not mandatory for V2 scripts, as there are ways to bypass the `check` function and return void directly. The following technique uses if else statement to avoid using the check function:
+However, this is not mandatory for V2 scripts, as there are ways to bypass the `check` function and return void directly. The following technique uses if-then-else statement to avoid using the check function:
 
 ```hs
 validator :: BuiltinData -> BuiltinData -> BuiltinData -> ()
