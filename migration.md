@@ -45,7 +45,7 @@ validator context = check $ validatorLogic (unsafeFromBuiltinData context)
         vaildatorLogic :: ScriptContext -> Bool
         vaildatorLogic = ... --decoding of the script-context for datum and redeemer information can be done here
 ```
-For smart contracts using Plutus V2, the validator still takes 3 arguments, but the return type can either be `BuiltinUnit` or `()`. For example:
+For smart contracts using Plutus V2, the validator still takes 3 arguments. For example:
 
 ```hs
 validator :: BuiltinData -> BuiltinData -> BuiltinData -> BuiltinUnit
@@ -59,7 +59,7 @@ validator datum redeemer context =
         validatorLogic :: Datum -> Redeemer -> ScriptContext -> Bool 
         validatorLogic datum redeemer context = ...
 ```
-
+> ***Note***: *The return type for Plutus V2 validators can be anything, and V2 scripts will succeed as long as the evaluation completes without error and does not exceed the budget. This is also true for V1 scripts.*
 ### 2.3 Reference script cost analysis
 DApps using Plutus V1 and V2 scripts need to be aware about the updated transaction costs linked to reference scripts under the Conway era. Also, fees for V2 and V3 will be adjusted following the Chang Hard Fork. This adjustment is due to the requirement to pay for reference scripts and a revision in the cost model.  
 The modifications to the cost model are expected to lower fees by approximately 10%-20%, though the introduction of reference script fees will cause a partial increase in overall costs.  
