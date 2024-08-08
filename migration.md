@@ -1,22 +1,28 @@
-# Migrating Cardano-Marketplace from Plutus V2 to Plutus V3
+# Migrating DApp from Plutus V2 to Plutus V3: A Comprehensive Guide
+
+The Cardano ecosystem continues to evolve, bringing about significant changes to its smart contract platform, Plutus. With the latest updates, migrating decentralized applications (DApps) from Plutus V2 to Plutus V3 will become a crucial step for developers looking to leverage new features and improvements. This document will guide you through the migration process for Cardano-Marketplace, a straightforward DApp for an NFT marketplace, outlining the technical details and best practices based on our own experience.
 
 # 1. DApp Overview
 
-[Cardano Marketplace](https://github.com/dQuadrant/cardano-marketplace) is a straightforward DApp for an NFT marketplace utilizing Plutus smart contracts. It supports minting assets, placing them on sell in the marketplace, buying them from the marketplace, and withdrawing them if you are the asset owner. Additionally, it can perform these tasks with reference scripts.
+[Cardano-Marketplace](https://github.com/dQuadrant/cardano-marketplace) is an NFT marketplace DApp utilizing Plutus smart contracts. It supports the following functionalities:
 
-## 1.1 DApp Types
+- Minting assets
+- Placing assets on sale in the marketplace
+- Buying assets from the marketplace
+- Withdrawing assets if you are the owner
 
-- Simple Marketplace
+Additionally, it handles these tasks using reference scripts. 
 
-    - Basic implementation for buying, selling, and withdrawing assets.
+The marketplace is categorized into two types:
+1. **Simple Marketplace:**
+A basic implementation for buying, selling, and withdrawing assets.
 
-- Configurable Marketplace
+2. **Configurable Marketplace:**
+Adds functionality for an additional fee payable to the market operator, with configurable fee amounts and operator addresses.
 
-    - Adds functionality for an additional fee payable to the market operator, with configurable fee amount and operator address.
+The Cardano-Marketplace has been implemented using Plutus V1, V2, and V3. This guide focuses on migrating from Plutus V2 to Plutus V3.
 
-The Cardano marketplace has been implemented using Plutus V1, V2, and V3. This article serves as a migration guide from Plutus V2 to Plutus V3.
-
-# 2. Effects of Chang Hard Fork on DApps and Smart Contracts
+# 2. Effects of the Chang Hard Fork on DApps and Smart Contracts
 
 ### 2.1. CIP-0069
 A significant change with the new Plutus dependency, as introduced by the [CIP-0069](https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0069/), affects the arguments given to all types of Plutus scripts:
@@ -134,7 +140,7 @@ The update has been catered towards V3 plutus scripts, as there is no need to ad
 ```hs
 {-# OPTIONS_GHC -fplugin-opt PlutusTx.Plugin:target-version=1.1.0 #-}
 ```
-In the case of parameterized V3 contracts, `PlutusTx.iftCodeDef` can directly be used, but again, if desired, the validator can be written in the following way by explicitly specifying `plcVersion110`:
+In the case of parameterized V3 contracts, `PlutusTx.liftCodeDef` can directly be used, but again, if desired, the validator can be written in the following way by explicitly specifying `plcVersion110`:
 
 ```hs
 configurableMarketValidator constructor = 
