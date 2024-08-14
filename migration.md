@@ -22,9 +22,15 @@ Adds functionality for an additional fee payable to the market operator, with co
 
 The Cardano-Marketplace has been implemented using Plutus V1, V2, and V3. This guide focuses on migrating from Plutus V2 to Plutus V3.
 
-# 2. Effects of the Chang Hard Fork on DApps and Smart Contracts
+# 2. Passing the Hard Fork
 
-### 2.1. CIP-0069
+- Generally, a DApp contract that is functional on the Babbage era should continue to operate seamlessly in the Conway era.
+- However, there are new cost implications when using reference scripts in Cardano transactions between the Babbage and Conway eras. It's important to reassess whether your DApp needs updates to accommodate the new cost model. For assistance, you can use the [reference script cost calculator](https://docs.google.com/spreadsheets/d/1KFJCCbkDE5GaghlD4rDXB12pqLKnDFUNOKi0WErp_-Q/edit?gid=0#gid=0).
+- If your DApp is affected by the new cost models, follow the instructions below to recompile your smart contract with the latest Plutus Tx to obtain a more efficient compiled contract.
+
+# 3. Effects of the Chang Hard Fork on DApps and Smart Contracts
+
+### 3.1. CIP-0069
 A significant change with the new Plutus dependency, as introduced by the [CIP-0069](https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0069/), affects the arguments given to all types of Plutus scripts:
 
 
@@ -34,7 +40,7 @@ Developers must update their DApps if they wish to use the latest dependencies. 
 
 Additionally, the requirement for a datum in spending scripts has been made optional. This allows donations and contributions to DAOs to be made more efficiently, as script UTxOs no longer need a datum to be redeemed. DApps can also introduce features that enable users to claim or withdraw funds that were sent without a datum.
 
-### 2.2 References
+### 3.2 References
 
 - **[Plutus V2 ScriptContext](https://github.com/IntersectMBO/plutus/blob/8c7a5f6aa80fff036537d4b130052ea9afe6c28b/plutus-ledger-api/src/PlutusLedgerApi/V2/Contexts.hs#L107)**
 
@@ -66,13 +72,13 @@ validator datum redeemer context =
         validatorLogic datum redeemer context = ...
 ```
 > ***Note***: *The return type for Plutus V2 validators can be anything, and V2 scripts will succeed as long as the evaluation completes without error and does not exceed the budget. This is also true for V1 scripts.*
-### 2.3 Reference script cost analysis
+### 3.3 Reference script cost analysis
 DApps using Plutus V1 and V2 scripts need to be aware about the updated transaction costs linked to reference scripts under the Conway era. Also, fees for V2 and V3 will be adjusted following the Chang Hard Fork. This adjustment is due to the requirement to pay for reference scripts and a revision in the cost model.  
 The modifications to the cost model are expected to lower fees by approximately 10%-20%, though the introduction of reference script fees will cause a partial increase in overall costs.  
 The cost model in Cardano is an integral part of its security protocol. By imposing higher costs on larger reference scripts, the network effectively mitigates spam.
 Please refer to the [reference script cost calculator](https://docs.google.com/spreadsheets/d/1KFJCCbkDE5GaghlD4rDXB12pqLKnDFUNOKi0WErp_-Q/edit?gid=0#gid=0) to analyze and compare the cost implications of using reference scripts in Cardano transactions between the Babbage and Conway eras. It could also be a resource for helping developers optimize their DApps for cost efficiency and resource utilization.
 
-# 3. What To Do
+# 4. What To Do
 
 If developers want to use `PlutusLedgerApi.V2` dependencies, one of the changes needed is to the return type of the validator if the `check` function is used. Since the type signature for the `check` function has changed from `Bool -> ()` to `Bool -> BuiltinUnit`, the validator implementing this function must also return `BuiltinUnit`. This type is compatible with the `PlutusTx.compile` function. 
 
@@ -149,11 +155,11 @@ configurableMarketValidator constructor =
 ```
 The [Cardano-Marketplace/V3/ConfigurableMarketplace](https://github.com/dQuadrant/cardano-marketplace/blob/80704834db82ed028d855777a49bbab7cbde9071/marketplace-plutus/Plutus/Contracts/V3/ConfigurableMarketplace.hs) uses a parameterized V3 contract with the optional pragma and specifies the plc version in the validator.
 
-## 3.1 Decoding Datum and Redeemer
+## 4.1 Decoding Datum and Redeemer
 
 Decoding the datum and the redeemer now depends on the script's purpose. Mainly, DApps are developed with scripts whose purpose is to either mint, spend, certify, or reward. V3 offers additional purposes, including voting and proposing, related to governance actions introduced in the Chang hard fork. Let's look into decoding datum and redeemer.
 
-### 3.1.1 Decoding Datum
+### 4.1.1 Decoding Datum
 
 Datum is only needed when the script is of the spending type. Therefore, the datum will come from the `scriptInfo` in the `scriptContext`. Here is a simple example where we expect the script to be of the spending type and get the datum:
 
@@ -172,7 +178,7 @@ datum = case scriptInfo of
           Nothing -> traceError "Missing datum"
     _ -> traceError "Script Purpose Mismatch"
 ```
-### 3.1.2 Decoding Redeemer
+### 4.1.2 Decoding Redeemer
 
 For decoding the redeemer, we don't need to expect the script purpose to be of a particular type. It can be directly decoded from the scriptContext. For a scriptContext ctx, the redeemer can be extracted in the following way:
 
@@ -186,7 +192,7 @@ Just like parsing datum to a correct data type, we can parse the redeemer to `Bu
 
 For the simple cardano marketplace contract using PlutusV3, the validator logic function is available at [Cardano-Marketplace-V3/SimpleMarketplace](https://github.com/dQuadrant/cardano-marketplace/blob/3f0e1290ea79f191511875221f41c9a90d852361/marketplace-plutus/Plutus/Contracts/V3/SimpleMarketplace.hs#L80). This function takes ScriptContext only, with the decoding of datum and redeemer done inside the function.
 
-# 4. Changes In Efficiency
+# 5. Changes In Efficiency
 
 With more functionalities introduced in PlutusV3 for governance actions, the `ScriptContext` has additional fields. Because of this, the size of the script (in bytes) of smart contracts written using `PlutusLedgerApi.V3` has increased a considerable amount.
 
@@ -258,7 +264,7 @@ This has a very pronounced effect on the size of a cbor script.
 
 The latest run of the Cardano Marketplace on sanchonet generated a report indicating the following:
 
-## 4.1 Simple Market
+## 5.1 Simple Market
 
 | Implementation | ScriptBytes |
 |---|---|
@@ -268,7 +274,7 @@ The latest run of the Cardano Marketplace on sanchonet generated a report indica
 | Plutus V3 Lazy | 7125 |
 | Plutus V3 Super Lazy | 2573 |
 
-## 4.2 Configurable Market
+## 5.2 Configurable Market
 
 | Implementation | ScriptBytes |
 |---|---|
@@ -281,7 +287,7 @@ The latest run of the Cardano Marketplace on sanchonet generated a report indica
 
 > Click [here](https://github.com/dQuadrant/cardano-marketplace/blob/dev/reports/test-sanchonet-cardano-api-9.0.0/2024-08-07_09-38-46-transaction-report.md) to view the full report
 
-# 5. Conclusion
+# 6. Conclusion
 
 In the migration of Cardano-Marketplace from Plutus V2 to Plutus V3, the adoption of the V3 Super Lazy approach has demonstrated notable efficiency gains. This methodology consistently emerges as the optimal choice across various implementations, including both Simple Market and Configurable Market. The key benefits of the V3 Super Lazy approach include reduced script bytes, lower memory consumption, decreased CPU fees, and minimized transaction bytes.
 
